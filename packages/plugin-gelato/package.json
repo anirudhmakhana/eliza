@@ -8,8 +8,11 @@
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
+            "import": {
+                "@elizaos/source": "./src/index.ts",
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
         }
     },
     "files": [
