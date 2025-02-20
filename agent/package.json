@@ -45,6 +45,7 @@
         "@elizaos/plugin-birdeye": "workspace:*",
         "@elizaos/plugin-zerion": "workspace:*",
         "@elizaos/plugin-binance": "workspace:*",
+        "@elizaos/plugin-gelato-game": "workspace:*",
         "@elizaos/plugin-avail": "workspace:*",
         "@elizaos/plugin-bnb": "workspace:*",
         "@elizaos/plugin-bootstrap": "workspace:*",

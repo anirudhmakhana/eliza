@@ -15,6 +15,8 @@ import { TwitterClientInterface } from "@elizaos/client-twitter";
 import { AlexaClientInterface } from "@elizaos/client-alexa";
 import { MongoDBDatabaseAdapter } from "@elizaos/adapter-mongodb";
 import { DevaClientInterface } from "@elizaos/client-deva";
+import { playerAgent } from "../mainCharacter";
+import { gameCharacter } from "../gameCharacter";
 
 import { FarcasterClientInterface } from "@elizaos/client-farcaster";
 import { OmniflixPlugin } from "@elizaos/plugin-omniflix";
@@ -23,6 +25,7 @@ import { XmtpClientInterface } from "@elizaos/client-xmtp";
 import { DirectClient } from "@elizaos/client-direct";
 import { agentKitPlugin } from "@elizaos/plugin-agentkit";
 import { gelatoPlugin } from "@elizaos/plugin-gelato";
+
 import { PrimusAdapter } from "@elizaos/plugin-primus";
 import { lightningPlugin } from "@elizaos/plugin-lightning";
 import { elizaCodeinPlugin, onchainJson } from "@elizaos/plugin-iq6900";
@@ -66,6 +69,7 @@ import { artheraPlugin } from "@elizaos/plugin-arthera";
 import { autonomePlugin } from "@elizaos/plugin-autonome";
 import { availPlugin } from "@elizaos/plugin-avail";
 import { avalanchePlugin } from "@elizaos/plugin-avalanche";
+import { gelatoGamePlugin } from "@elizaos/plugin-gelato-game";
 import { b2Plugin } from "@elizaos/plugin-b2";
 import { binancePlugin } from "@elizaos/plugin-binance";
 import { birdeyePlugin } from "@elizaos/plugin-birdeye";
@@ -483,7 +487,7 @@ export async function loadCharacters(
 
     if (loadedCharacters.length === 0) {
         elizaLogger.info("No characters found, using default character");
-        loadedCharacters.push(defaultCharacter);
+        loadedCharacters.push(playerAgent);
     }
 
     return loadedCharacters;
@@ -1293,6 +1297,7 @@ export async function createAgent(
                 ? quickIntelPlugin
                 : null,
             getSecret(character, "GELATO_RELAY_API_KEY") ? gelatoPlugin : null,
+            getSecret(character, "GELATO_RELAY_API_KEY") ? gelatoGamePlugin : null,
             getSecret(character, "TRIKON_WALLET_ADDRESS") ? trikonPlugin : null,
             getSecret(character, "ARBITRAGE_EVM_PRIVATE_KEY") &&
             (getSecret(character, "ARBITRAGE_EVM_PROVIDER_URL") ||
@@ -1474,60 +1479,42 @@ const hasValidRemoteUrls = () =>
 const startAgents = async () => {
     const directClient = new DirectClient();
     let serverPort = Number.parseInt(settings.SERVER_PORT || "3000");
-    const args = parseArguments();
-    const charactersArg = args.characters || args.character;
-    let characters = [defaultCharacter];
-
-    if (process.env.IQ_WALLET_ADDRESS && process.env.IQSOlRPC) {
-        characters = await loadCharacterFromOnchain();
-    }
-
-    const notOnchainJson = !onchainJson || onchainJson == "null";
-
-    if ((notOnchainJson && charactersArg) || hasValidRemoteUrls()) {
-        characters = await loadCharacters(charactersArg);
-    }
-
-    // Normalize characters for injectable plugins
-    characters = await Promise.all(characters.map(normalizeCharacter));
-
+    
     try {
-        for (const character of characters) {
-            await startAgent(character, directClient);
+        // Use both imported characters
+        await startAgent(playerAgent, directClient);
+        await startAgent(gameCharacter, directClient);
+        
+        // Find available port
+        while (!(await checkPortAvailable(serverPort))) {
+            elizaLogger.warn(
+                `Port ${serverPort} is in use, trying ${serverPort + 1}`
+            );
+            serverPort++;
         }
+
+        // upload agent functionality into directClient
+        directClient.startAgent = async (character) => {
+            character.plugins = await handlePluginImporting(character.plugins);
+            return startAgent(character, directClient);
+        };
+
+        directClient.loadCharacterTryPath = loadCharacterTryPath;
+        directClient.jsonToCharacter = jsonToCharacter;
+
+        directClient.start(serverPort);
+
+        if (serverPort !== Number.parseInt(settings.SERVER_PORT || "3000")) {
+            elizaLogger.log(`Server started on alternate port ${serverPort}`);
+        }
+
+        elizaLogger.info(
+            "Run `pnpm start:client` to start the client and visit the outputted URL (http://localhost:5173) to chat with your agents."
+        );
     } catch (error) {
         elizaLogger.error("Error starting agents:", error);
+        process.exit(1);
     }
-
-    // Find available port
-    while (!(await checkPortAvailable(serverPort))) {
-        elizaLogger.warn(
-            `Port ${serverPort} is in use, trying ${serverPort + 1}`
-        );
-        serverPort++;
-    }
-
-    // upload some agent functionality into directClient
-    directClient.startAgent = async (character) => {
-        // Handle plugins
-        character.plugins = await handlePluginImporting(character.plugins);
-
-        // wrap it so we don't have to inject directClient later
-        return startAgent(character, directClient);
-    };
-
-    directClient.loadCharacterTryPath = loadCharacterTryPath;
-    directClient.jsonToCharacter = jsonToCharacter;
-
-    directClient.start(serverPort);
-
-    if (serverPort !== Number.parseInt(settings.SERVER_PORT || "3000")) {
-        elizaLogger.log(`Server started on alternate port ${serverPort}`);
-    }
-
-    elizaLogger.info(
-        "Run `pnpm start:client` to start the client and visit the outputted URL (http://localhost:5173) to chat with your agents. When running multiple agents, use client with different port `SERVER_PORT=3001 pnpm start:client`"
-    );
 };
 
 startAgents().catch((error) => {
