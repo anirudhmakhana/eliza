@@ -13,22 +13,7 @@ import type {
 } from "viem";
 
 const GELATO_RELAY_API_KEY = process.env.GELATO_RELAY_API_KEY || "";
-const relay = new GelatoRelay({
-    contract: {
-        relay1BalanceERC2771: "0x61F2976610970AFeDc1d83229e1E21bdc3D5cbE4",
-        relayERC2771: "",
-        relay1BalanceConcurrentERC2771: "",
-        relayConcurrentERC2771: "",
-        relay1BalanceConcurrentERC2771zkSync: "",
-        relay1BalanceERC2771zkSync: "",
-        relayConcurrentERC2771zkSync: "",
-        relayERC2771zkSync: "",
-        relayERC2771Abstract: "",
-        relay1BalanceERC2771Abstract: "",
-        relayConcurrentERC2771Abstract: "",
-        relay1BalanceConcurrentERC2771Abstract: ""
-    }
-});
+const relay = new GelatoRelay();
 
 /**
  * Executes a `sponsoredCall` with the Gelato Relay SDK.
