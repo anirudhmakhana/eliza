@@ -1297,7 +1297,7 @@ export async function createAgent(
                 ? quickIntelPlugin
                 : null,
             getSecret(character, "GELATO_RELAY_API_KEY") ? gelatoPlugin : null,
-            getSecret(character, "GELATO_RELAY_API_KEY") ? gelatoGamePlugin : null,
+            // getSecret(character, "GELATO_RELAY_API_KEY") ? gelatoGamePlugin : null,
             getSecret(character, "TRIKON_WALLET_ADDRESS") ? trikonPlugin : null,
             getSecret(character, "ARBITRAGE_EVM_PRIVATE_KEY") &&
             (getSecret(character, "ARBITRAGE_EVM_PROVIDER_URL") ||
@@ -1483,7 +1483,7 @@ const startAgents = async () => {
     try {
         // Use both imported characters
         await startAgent(playerAgent, directClient);
-        await startAgent(gameCharacter, directClient);
+        // await startAgent(gameCharacter, directClient);
         
         // Find available port
         while (!(await checkPortAvailable(serverPort))) {
