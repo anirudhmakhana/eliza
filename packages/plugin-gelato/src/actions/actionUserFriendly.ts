@@ -13,7 +13,7 @@ import { AbiFunction, parseAbi, parseEther, formatEther } from "viem";
 import { ContractInteractionAction } from "./actionContractInteraction";
 import { CHAIN_EXPLORERS } from "../providers/blockexplorer";
 // import { coinflipv2abi } from "../contracts/coinflipv2abi";
-import { coinfliptestv2abi } from "../contracts/coinfliptestv2abi";
+import { coinflipVRFABI } from "../contracts/coinflipvrfabi";
 import axios from 'axios';
 
 /**
@@ -70,7 +70,7 @@ interface RoundResponse {
 
 // Define constants for better maintainability
 const INK_SEPOLIA_CONTRACTS = {
-    COIN_FLIP_TEST: "0x3d498db972F9f63C40F5d3AceEC9dBAE891a802F"
+    COIN_FLIP_TEST: "0x0616d765019aa11ec5a50e2aeA0e371b064c64f0"
 } as const;
 
 // Changed from "inkSepolia" to match the RPC in .env
@@ -117,14 +117,14 @@ export const userFriendlyContractInteractionAction: Action = {
             // Check user's ETH balance in the contract
             const userBalance = await publicClient.readContract({
                 address: contractAddress,
-                abi: coinfliptestv2abi,
+                abi: coinflipVRFABI,
                 functionName: 'ethBalances',
                 args: [userAddress]
             }) as bigint;
 
             const currentRound = await publicClient.readContract({
                 address: contractAddress,
-                abi: coinfliptestv2abi,
+                abi: coinflipVRFABI,
                 functionName: 'currentRound'
             }) as bigint;
 
@@ -146,7 +146,7 @@ export const userFriendlyContractInteractionAction: Action = {
 
                 const action = new ContractInteractionAction();
                 const response = await action.interactWithContract(
-                    coinfliptestv2abi as AbiFunction[],
+                    coinflipVRFABI as AbiFunction[],
                     "placeBet",
                     [randomChoice, amountInWei],
                     contractAddress,
@@ -178,7 +178,7 @@ export const userFriendlyContractInteractionAction: Action = {
 
                 const action = new ContractInteractionAction();
                 const response = await action.interactWithContract(
-                    coinfliptestv2abi as AbiFunction[],
+                    coinflipVRFABI as AbiFunction[],
                     "placeBet",
                     [betSide, amountInWei],
                     contractAddress,
