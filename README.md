@@ -1,192 +1,119 @@
 # Eliza 🤖
+# Eliza Coinflip Game Agent 🎲
+
+## Overview
+
+This agent is designed to interact with a Coinflip game on the blockchain. It allows users to:
+- Place bets on heads or tails
+- Check game results
+- View round information
+- Get random bet suggestions
+- Check their balance
+
+The agent uses Gelato for gasless transactions, making the gaming experience seamless for users.
+
+## Screenshots
 
 <div align="center">
-  <img src="./docs/static/img/eliza_banner.jpg" alt="Eliza Banner" width="100%" />
+  <h3>Game Interface</h3>
+  <img src="./docs/static/img/flipmaster-1.png" alt="Coinflip Game Interface" width="800px" />
+  
+  <h3>Placing Bets</h3>
+  <img src="./docs/static/img/flipmaster-2.png" alt="Placing Bets in Coinflip" width="800px" />
+  
+  <h3>Round Results</h3>
+  <img src="./docs/static/img/flipmaster-3.png" alt="Viewing Round Results" width="800px" />
 </div>
 
-<div align="center">
+## Prerequisites
 
-📑 [Technical Report](https://arxiv.org/pdf/2501.06781) |  📖 [Documentation](https://elizaos.github.io/eliza/) | 🎯 [Examples](https://github.com/thejoven/awesome-eliza)
-
-</div>
-
-## 🌍 README Translations
-
-[中文说明](i18n/readme/README_CN.md) | [日本語の説明](i18n/readme/README_JA.md) | [한국어 설명](i18n/readme/README_KOR.md) | [Persian](i18n/readme/README_FA.md) | [Français](i18n/readme/README_FR.md) | [Português](i18n/readme/README_PTBR.md) | [Türkçe](i18n/readme/README_TR.md) | [Русский](i18n/readme/README_RU.md) | [Español](i18n/readme/README_ES.md) | [Italiano](i18n/readme/README_IT.md) | [ไทย](i18n/readme/README_TH.md) | [Deutsch](i18n/readme/README_DE.md) | [Tiếng Việt](i18n/readme/README_VI.md) | [עִברִית](i18n/readme/README_HE.md) | [Tagalog](i18n/readme/README_TG.md) | [Polski](i18n/readme/README_PL.md) | [Arabic](i18n/readme/README_AR.md) | [Hungarian](i18n/readme/README_HU.md) | [Srpski](i18n/readme/README_RS.md) | [Română](i18n/readme/README_RO.md) | [Nederlands](i18n/readme/README_NL.md) | [Ελληνικά](i18n/readme/README_GR.md)
-
-## 🚩 Overview
-
-<div align="center">
-  <img src="./docs/static/img/eliza_diagram.png" alt="Eliza Diagram" width="100%" />
-</div>
-
-## ✨ Features
-
-- 🛠️ Full-featured Discord, X (Twitter) and Telegram connectors
-- 🔗 Support for every model (Llama, Grok, OpenAI, Anthropic, Gemini, etc.)
-- 👥 Multi-agent and room support
-- 📚 Easily ingest and interact with your documents
-- 💾 Retrievable memory and document store
-- 🚀 Highly extensible - create your own actions and clients
-- 📦 Just works!
-
-## Video Tutorials
-
-[AI Agent Dev School](https://www.youtube.com/watch?v=ArptLpQiKfI&list=PLx5pnFXdPTRzWla0RaOxALTSTnVq53fKL)
-
-## 🎯 Use Cases
-
-- 🤖 Chatbots
-- 🕵️ Autonomous Agents
-- 📈 Business Process Handling
-- 🎮 Video Game NPCs
-- 🧠 Trading
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- [Python 2.7+](https://www.python.org/downloads/)
 - [Node.js 23+](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 - [pnpm](https://pnpm.io/installation)
+- A wallet with some testnet ETH
+- Gelato Relay API key (get it from [Gelato](https://www.gelato.network/))
 
-> **Note for Windows Users:** [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install-manual) is required.
+## Quick Start
 
-### Use the Starter (Recommended)
-
+1. Clone and checkout the correct branch:
 ```bash
-git clone https://github.com/elizaos/eliza-starter.git
-cd eliza-starter
-cp .env.example .env
-pnpm i && pnpm build && pnpm start
-```
-
-### Manually Start Eliza (Only recommended if you know what you are doing)
-
-#### Checkout the latest release
-
-```bash
-# Clone the repository
 git clone https://github.com/elizaos/eliza.git
-
-# This project iterates fast, so we recommend checking out the latest release
-git checkout $(git describe --tags --abbrev=0)
-# If the above doesn't checkout the latest release, this should work:
-# git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+cd eliza
+git checkout update-gelato-plugin
 ```
 
-#### Edit the .env file
-
-Copy .env.example to .env and fill in the appropriate values.
-
-```
+2. Set up your environment variables:
+```bash
 cp .env.example .env
 ```
 
-Note: .env is optional. If you're planning to run multiple distinct agents, you can pass secrets through the character JSON
+3. Configure the following required variables in your `.env`:
+```env
+EVM_PRIVATE_KEY=your_wallet_private_key
+EVM_PROVIDER_URL=your_rpc_url
+GELATO_RELAY_API_KEY=your_gelato_api_key
+```
 
-#### Start Eliza
-
+4. Install dependencies and build:
 ```bash
-pnpm i
-pnpm build
-pnpm start
+pnpm install
+pnpm run build
+```
 
-# The project iterates fast, sometimes you need to clean the project if you are coming back to the project
+5. Start the agent:
+```bash
+pnpm run start
+```
+
+6. In a new terminal, start the client interface:
+```bash
+pnpm run start:client
+```
+
+7. Open your browser and navigate to the URL shown in the terminal (usually http://localhost:3000)
+
+## Usage
+
+The agent responds to the following commands:
+
+- `bet 0.01 heads` - Place a bet of 0.01 ETH on heads
+- `bet 0.01 tails` - Place a bet of 0.01 ETH on tails
+- `pick for me` - Get a random bet suggestion
+- `balance` - Check your current balance
+- `show round` - View current round information
+- `did i win` - Check if you won your last bet
+- `check result 123` - Check results for round number 123
+
+## Important Notes
+
+- All transactions are gasless thanks to Gelato integration
+- The game is running on the Sepolia testnet
+- Minimum bet is 0.01 ETH
+- Maximum bet is 0.05 ETH
+- Each round has a time limit for betting
+
+## Web3 Functions & VRF Tasks
+
+The game uses Gelato's Web3 Functions and VRF (Verifiable Random Function) for automation and randomness:
+
+- [Event Detection & Bet Processing](https://app.gelato.network/functions/task/0x635ba6671e63842c7b511865ce85cbde37c01692999493fb601394255654c40e:763373) - Web3 function that monitors events and processes bets
+- [VRF Round Resolution](https://app.gelato.network/functions/task/0x379bcc0c73cbe607297306a54e854cccb8eadd1bc57cb46061d0d2b3e459033f:763373) - Task that provides verifiable randomness for round resolution
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Ensure your wallet has enough testnet ETH
+2. Verify your environment variables are correctly set
+3. Make sure you're on the correct branch (`update-gelato-plugin`)
+4. Try cleaning the project and rebuilding:
+```bash
 pnpm clean
+pnpm install
+pnpm build
 ```
 
-### Interact via Browser
+## Support
 
-Once the agent is running, you should see the message to run "pnpm start:client" at the end.
-
-Open another terminal, move to the same directory, run the command below, then follow the URL to chat with your agent.
-
-```bash
-pnpm start:client
-```
-
-Then read the [Documentation](https://elizaos.github.io/eliza/) to learn how to customize your Eliza.
-
----
-
-### Automatically Start Eliza
-
-The start script provides an automated way to set up and run Eliza:
-
-```bash
-sh scripts/start.sh
-```
-
-For detailed instructions on using the start script, including character management and troubleshooting, see our [Start Script Guide](./docs/docs/guides/start-script.md).
-
-> **Note**: The start script handles all dependencies, environment setup, and character management automatically.
-
----
-
-### Modify Character
-
-1. Open `packages/core/src/defaultCharacter.ts` to modify the default character. Uncomment and edit.
-
-2. To load custom characters:
-    - Use `pnpm start --characters="path/to/your/character.json"`
-    - Multiple character files can be loaded simultaneously
-3. Connect with X (Twitter)
-    - change `"clients": []` to `"clients": ["twitter"]` in the character file to connect with X
-
----
-
-#### Additional Requirements
-
-You may need to install Sharp. If you see an error when starting up, try installing it with the following command:
-
-```
-pnpm install --include=optional sharp
-```
-
----
-
-### Start Eliza with Gitpod
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/elizaos/eliza/tree/main)
-
----
-
-### Deploy Eliza in one click 
-
-Use [Fleek](https://fleek.xyz/eliza/) to deploy Eliza in one click. This opens Eliza to non-developers and provides the following options to build your agent:
-1. Start with a template
-2. Build characterfile from scratch
-3. Upload pre-made characterfile
-
-Click [here](https://fleek.xyz/eliza/) to get started!
-
----
-
-### Community & contact
-
-- [GitHub Issues](https://github.com/elizaos/eliza/issues). Best for: bugs you encounter using Eliza, and feature proposals.
-- [Discord](https://discord.gg/ai16z). Best for: sharing your applications and hanging out with the community.
-
-## Citation
-
-We now have a [paper](https://arxiv.org/pdf/2501.06781) you can cite for the Eliza OS:
-```bibtex
-@article{walters2025eliza,
-  title={Eliza: A Web3 friendly AI Agent Operating System},
-  author={Walters, Shaw and Gao, Sam and Nerd, Shakker and Da, Feng and Williams, Warren and Meng, Ting-Chien and Han, Hunter and He, Frank and Zhang, Allen and Wu, Ming and others},
-  journal={arXiv preprint arXiv:2501.06781},
-  year={2025}
-}
-```
-
-## Contributors
-
-<a href="https://github.com/elizaos/eliza/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=elizaos/eliza" alt="Eliza project contributors" />
-</a>
-
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=elizaos/eliza&type=Date)](https://star-history.com/#elizaos/eliza&Date)
+For additional help:
+- [Discord](https://discord.gg/ai16z)
+- [GitHub Issues](https://github.com/elizaos/eliza/issues)
